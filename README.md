@@ -17,6 +17,9 @@
 > `INSTAGRAM_USERNAME` & `INSTAGRAM_PASSWORD`
 게시물을 업로드할 계정의 아이디와 비밀번호입니다.
 
+> `BACKGROUND_URL` & `BOLD_FONT_URL` & `EXTRA_BOLD_FONT_URL`
+게시물에 사용되는 에셋 파일들의 URL입니다. 비워두면 다운로드를 하지 않습니다.
+
 ## `assets` 폴더의 용도와 필요한 파일들
 게시물에 업로드할 사진의 배경 사진을 저장하고, 만들어진 사진을 임시로 저장하는 용도입니다.
 

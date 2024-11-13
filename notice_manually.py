@@ -6,6 +6,7 @@ from datetime import datetime
 from dotenv import load_dotenv
 from instagrapi import Client
 from pathlib import Path
+from init import init
 
 load_dotenv()
 
@@ -80,4 +81,5 @@ def main():
 
 
 if __name__ == '__main__':
+    init()
     main()
