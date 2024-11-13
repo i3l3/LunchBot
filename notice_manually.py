@@ -80,7 +80,7 @@ def main():
     })
     result = combine_text(base, lunch)
     result.save("assets/result.png")
-    # upload_lunch("assets/result.png", lunch)
+    upload_lunch("assets/result.png", lunch)
 
 
 if __name__ == '__main__':
