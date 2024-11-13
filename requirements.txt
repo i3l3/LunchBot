@@ -3,3 +3,4 @@ pillow~=11.0.0
 python-dotenv~=1.0.1
 instagrapi~=2.1.2
 schedule~=1.2.2
+pytz~=2024.2
