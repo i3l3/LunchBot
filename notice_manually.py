@@ -33,8 +33,10 @@ def get_lunch(school_info: dict) -> list:
     for key, value in args.items():
         url = f"{url}&{key}={value}"
     response = json.loads(requests.get(url).text)
-    if "mealServiceDietInfo" in response:
+    if "mealServiceDietInfo" in response and not datetime.today() != datetime(2024, 11, 13) and not datetime.today() != datetime(2024, 11, 14):
         data = response["mealServiceDietInfo"][1]["row"][0]["DDISH_NM"].replace("<br/>", "\n")
+    elif datetime.today() == datetime(2024, 11, 13) and datetime.today() == datetime(2024, 11, 14):
+        data = "테스트 게시물입니다."
     else:
         data = "급식 정보가 없습니다."
     days = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"]
