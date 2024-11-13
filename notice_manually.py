@@ -67,6 +67,7 @@ def upload_lunch(img: str, lunch: list):
     )
 
 def main():
+    init()
     base = make_image()
     lunch = get_lunch({
         "API_KEY": os.getenv("API_KEY"),
@@ -81,5 +82,4 @@ def main():
 
 
 if __name__ == '__main__':
-    init()
     main()
