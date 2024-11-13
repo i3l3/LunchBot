@@ -9,7 +9,7 @@ from instagrapi import Client
 from pathlib import Path
 
 load_dotenv()
-locale.setlocale(locale.LC_ALL, "ko_KR.UTF-8")
+locale.setlocale(locale.LC_ALL, "ko_KR.utf8")
 
 def make_image() -> Image.Image:
     background = (Image.open("assets/background.png")
