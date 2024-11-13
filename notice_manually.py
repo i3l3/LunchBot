@@ -1,7 +1,6 @@
 import os
 import requests
 import json
-import locale
 from PIL import Image, ImageFilter, ImageDraw, ImageFont
 from datetime import datetime
 from dotenv import load_dotenv
@@ -9,7 +8,6 @@ from instagrapi import Client
 from pathlib import Path
 
 load_dotenv()
-locale.setlocale(locale.LC_ALL, "ko_KR.utf8")
 
 def make_image() -> Image.Image:
     background = (Image.open("assets/background.png")
@@ -38,7 +36,9 @@ def get_lunch(school_info: dict) -> list:
         data = response["mealServiceDietInfo"][1]["row"][0]["DDISH_NM"].replace("<br/>", "\n")
     else:
         data = "급식 정보가 없습니다."
-    return [datetime.today().strftime("%m월 %d일 %A 급식 정보"), data,
+    days = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"]
+    day_name = days[int(datetime.today().strftime("%w"))]
+    return [datetime.today().strftime(f"%m월 %d일 {day_name} 급식 정보"), data,
             """- 요리명에 표시된 번호 : 알레르기를 유발할수 있는 식재료입니다.
 - 알레르기 유발 식재료 번호 : 1.난류, 2.우유, 3.메밀, 4.땅콩, 5.대두, 6.밀, 7.고등어, 
   8.게, 9.새우, 10.돼지고기, 11.복숭아, 12.토마토, 13.아황산류, 14.호두, 15.닭고기, 
