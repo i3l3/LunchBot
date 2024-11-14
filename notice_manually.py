@@ -1,6 +1,7 @@
 import os
 import requests
 import json
+from pytz import timezone, utc
 from PIL import Image, ImageFilter, ImageDraw, ImageFont
 from datetime import datetime
 from dotenv import load_dotenv
@@ -33,15 +34,15 @@ def get_lunch(school_info: dict) -> list:
     for key, value in args.items():
         url = f"{url}&{key}={value}"
     response = json.loads(requests.get(url).text)
-    if datetime(2024, 11, 13) <= datetime.today() < datetime(2024, 11, 15):
-        data = "테스트 게시물입니다."
-    elif "mealServiceDietInfo" in response:
+    kst = timezone('Asia/Seoul')
+    today = utc.localize(datetime.now()).astimezone(kst)
+    if "mealServiceDietInfo" in response:
         data = response["mealServiceDietInfo"][1]["row"][0]["DDISH_NM"].replace("<br/>", "\n")
     else:
         data = "급식 정보가 없습니다."
     days = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"]
-    day_name = days[int(datetime.today().strftime("%w"))]
-    return [datetime.today().strftime(f"%m월 %d일 {day_name} 급식 정보"), data,
+    day_name = days[int(today.strftime("%w"))]
+    return [today.strftime(f"%m월 %d일 {day_name} 급식 정보"), data,
             """- 요리명에 표시된 번호 : 알레르기를 유발할수 있는 식재료입니다.
 - 알레르기 유발 식재료 번호 : 1.난류, 2.우유, 3.메밀, 4.땅콩, 5.대두, 6.밀, 7.고등어, 
   8.게, 9.새우, 10.돼지고기, 11.복숭아, 12.토마토, 13.아황산류, 14.호두, 15.닭고기, 
