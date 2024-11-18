@@ -39,7 +39,7 @@ def get_lunch(school_info: dict) -> list:
     else:
         data = "급식 정보가 없습니다."
     days = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"]
-    day_name = days[int(school_info["date"].strftime("%w"))]
+    day_name = days[school_info["date"].weekday()]
     return [school_info["date"].strftime(f"%m월 %d일 {day_name} 급식 정보"), data,
             """- 요리명에 표시된 번호 : 알레르기를 유발할수 있는 식재료입니다.
 - 알레르기 유발 식재료 번호 : 1.난류, 2.우유, 3.메밀, 4.땅콩, 5.대두, 6.밀, 7.고등어, 
