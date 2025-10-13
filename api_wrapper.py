@@ -39,7 +39,7 @@ def get_times(date: str):
     response = requests.get(url)
     return json.loads(response.text)["hisTimetable"][1]["row"]
 
-def upload_post(location: str, description: str):
+def upload_post(locations: list, description: str):
     username = os.getenv("INSTAGRAM_USERNAME")
     password = os.getenv("INSTAGRAM_PASSWORD")
     author = os.getenv("INSTAGRAM_AUTHOR")
@@ -48,7 +48,7 @@ def upload_post(location: str, description: str):
         extra_data["invite_coauthor_user_id"] = author
     client = Client()
     client.login(username, password)
-    client.photo_upload(Path(location), description, extra_data=extra_data)
+    client.album_upload([Path(location) for location in locations], description, extra_data=extra_data)
 
 def upload_story(location: str):
     username = os.getenv("INSTAGRAM_USERNAME")
