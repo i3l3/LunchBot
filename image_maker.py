@@ -74,28 +74,27 @@ def write_text(img: Image, offset: int, ratio: float, title: str, main: str, bot
 
 if __name__ == "__main__":
     offset = 50
-    # ratio = 4 / 5
-    ratio = 9 / 16
-    bg = crop_img(Image.open("assets/boram1.png"), ratio).filter(ImageFilter.GaussianBlur(3))
-    bg = write_text(bg, offset, ratio, "테스트", "테스트 게시물입니다.\n테스트1\n테스트2\n테스트3"
-                                              "\n\n\n\n"
-                                              "급식 알림 일정\n"
-                                              "20:00 익일 급식 업로드 (포스트)\n"
-                                              "07:00 당일 급식 업로드 (스토리)",
-                    "asdfasdfasdf\nsdafasdfasdf")
-    # bg = write_text(bg, offset, ratio,
-    #                 "8월 22일 금요일 급식 정보",
-    #                 "차수수밥\n"
-    #                 "유부장국\n"
-    #                 "묵은지김치찜\n"
-    #                 "오리훈제/머스터드소스.+무쌈\n"
-    #                 "오이부추무침\n"
-    #                 "배추김치\n"
-    #                 "제주청귤주스",
-    #                 "- 요리명에 표시된 번호 : 알레르기를 유발할수 있는 식재료입니다.\n"
-    #                 "- 알레르기 유발 식재료 번호 : 1.난류, 2.우유, 3.메밀, 4.땅콩, 5.대두, 6.밀,\n"
-    #                 "   7.고등어, 8.게, 9.새우, 10.돼지고기, 11.복숭아, 12.토마토, 13.아황산류,\n"
-    #                 "   14.호두, 15.닭고기, 16.쇠고기, 17.오징어, 18.조개류(굴, 전복, 홍합 포함), 19.잣\n"
-    #                 "- 알레르기 정보는 게시글 설명란에 있습니다.")
-    bg.show()
-    bg.save("assets/boram3.png")
+    bg = "assets/boram1.png"
+    title = "8월 22일 금요일 급식 정보"
+    main = ("차수수밥\n"
+           "유부장국\n"
+           "묵은지김치찜\n"
+           "오리훈제/머스터드소스.+무쌈\n"
+           "오이부추무침\n"
+           "배추김치\n"
+           "제주청귤주스")
+    bottom = ("- 요리명에 표시된 번호 : 알레르기를 유발할수 있는 식재료입니다.\n"
+             "- 알레르기 유발 식재료 번호 : 1.난류, 2.우유, 3.메밀, 4.땅콩, 5.대두, 6.밀,\n"
+             "   7.고등어, 8.게, 9.새우, 10.돼지고기, 11.복숭아, 12.토마토, 13.아황산류,\n"
+             "   14.호두, 15.닭고기, 16.쇠고기, 17.오징어, 18.조개류(굴, 전복, 홍합 포함), 19.잣\n"
+             "- 알레르기 정보는 게시글 설명란에 있습니다.")
+
+    post_ratio = 4 / 5
+    post_bg = crop_img(Image.open(bg), post_ratio).filter(ImageFilter.GaussianBlur(3))
+    post_bg = write_text(post_bg, offset, post_ratio, title, main, bottom)
+    post_bg.save("assets/post.png")
+
+    story_ratio = 9 / 16
+    story_bg = crop_img(Image.open(bg), story_ratio).filter(ImageFilter.GaussianBlur(3))
+    story_bg = write_text(story_bg, offset, story_ratio, title, main, bottom)
+    story_bg.save("assets/story.png")
