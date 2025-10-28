@@ -69,7 +69,7 @@ if __name__ == "__main__":
     meal_post = lambda: upload(tomorrow, [2, 3], 50, bg)
 
     jobstores = {
-        'default': SQLAlchemyJobStore(url='sqlite://storage.sqlite')
+        'default': SQLAlchemyJobStore(url='sqlite:///storage.sqlite')
     }
 
     scheduler = BackgroundScheduler(jobstores=jobstores)
