@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 from PIL import Image, ImageFilter
 from locale import setlocale
 from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from api_wrapper import get_meals, upload_post, upload_story
 from image_maker import crop_img, write_text
 import locale
@@ -67,7 +68,11 @@ if __name__ == "__main__":
     dinner_story = lambda: upload(today, [3], 50, bg, ratio=9/16, is_post=False)
     meal_post = lambda: upload(tomorrow, [2, 3], 50, bg)
 
-    scheduler = BackgroundScheduler()
+    jobstores = {
+        'default': SQLAlchemyJobStore(url='sqlite://storage.sqlite')
+    }
+
+    scheduler = BackgroundScheduler(jobstores=jobstores)
     scheduler.add_job(lunch_story, "cron", hour=7)
     scheduler.add_job(dinner_story, "cron", hour=16, minute=30)
     scheduler.add_job(meal_post, "cron", hour=21)
