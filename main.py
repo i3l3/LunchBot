@@ -76,3 +76,5 @@ if __name__ == "__main__":
     scheduler.add_job(lunch_story, "cron", hour=7)
     scheduler.add_job(dinner_story, "cron", hour=16, minute=30)
     scheduler.add_job(meal_post, "cron", hour=21)
+    scheduler.start()
+
