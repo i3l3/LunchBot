@@ -279,3 +279,4 @@ pip-selfcheck.json
 
 assets/*
 !assets/PretendardVariable.ttf
+storage.sqlite

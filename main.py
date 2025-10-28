@@ -64,9 +64,9 @@ if __name__ == "__main__":
     bg = "assets/boram1.png"
     today = datetime.date.today()
     tomorrow = datetime.date.today() + datetime.timedelta(days=1)
-    lunch_story = lambda: upload(today, [2], 50, bg, ratio=9/16, is_post=False)
-    dinner_story = lambda: upload(today, [3], 50, bg, ratio=9/16, is_post=False)
-    meal_post = lambda: upload(tomorrow, [2, 3], 50, bg)
+    def lunch_story(): upload(today, [2], 50, bg, ratio=9/16, is_post=False)
+    def dinner_story(): upload(today, [3], 50, bg, ratio=9/16, is_post=False)
+    def meal_post(): upload(tomorrow, [2, 3], 50, bg)
 
     jobstores = {
         'default': SQLAlchemyJobStore(url='sqlite:///storage.sqlite')
