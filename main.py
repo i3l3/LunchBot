@@ -76,14 +76,14 @@ if __name__ == "__main__":
     # upload_post(['assets/post.jpg'], 'asdf')
     # upload(today, [2], 50, bg, ratio=4/5, is_post=True, is_test=True)
     # upload(today, [3], 50, bg, ratio=9/16, is_post=False, is_test=True)
-    meal_post()
-    # jobstores = {
-    #     'default': SQLAlchemyJobStore(url='sqlite:///storage.sqlite')
-    # }
-    #
-    # scheduler = BackgroundScheduler(jobstores=jobstores) # 왜 안되지??
-    # scheduler.add_job(lunch_story, "cron", hour=7)
-    # scheduler.add_job(dinner_story, "cron", hour=16, minute=30)
-    # scheduler.add_job(meal_post, "cron", hour=21)
-    # scheduler.start()
+    # meal_post()
+    jobstores = {
+        'default': SQLAlchemyJobStore(url='sqlite:///storage.sqlite')
+    }
+
+    scheduler = BackgroundScheduler(jobstores=jobstores)
+    scheduler.add_job(lunch_story, "cron", hour=7)
+    scheduler.add_job(dinner_story, "cron", hour=16, minute=30)
+    scheduler.add_job(meal_post, "cron", hour=21)
+    scheduler.start()
 
