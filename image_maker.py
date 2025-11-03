@@ -92,9 +92,9 @@ if __name__ == "__main__":
     post_ratio = 4 / 5
     post_bg = crop_img(Image.open(bg), post_ratio).filter(ImageFilter.GaussianBlur(3))
     post_bg = write_text(post_bg, offset, post_ratio, title, main, bottom)
-    post_bg.save("assets/post.png")
+    post_bg.save("assets/post.jpg")
 
     story_ratio = 9 / 16
     story_bg = crop_img(Image.open(bg), story_ratio).filter(ImageFilter.GaussianBlur(3))
     story_bg = write_text(story_bg, offset, story_ratio, title, main, bottom)
-    story_bg.save("assets/story.png")
+    story_bg.save("assets/story.jpg")

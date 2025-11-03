@@ -3,7 +3,9 @@ import urllib
 import requests
 import os
 from instagrapi import Client
+from instagrapi.types import Usertag
 from pathlib import Path
+
 
 def get_meals(date: str):
     api_key = os.getenv("API_KEY")
@@ -43,18 +45,39 @@ def upload_post(locations: list, description: str):
     username = os.getenv("INSTAGRAM_USERNAME")
     password = os.getenv("INSTAGRAM_PASSWORD")
     author = os.getenv("INSTAGRAM_AUTHOR")
-    extra_data = {}
-    if author:
-        extra_data["invite_coauthor_user_id"] = author
+
     client = Client()
-    client.login(username, password)
-    client.album_upload([Path(location) for location in locations], description, extra_data=extra_data)
+    if os.path.exists("session.json"):
+        client.load_settings("session.json")
+        client.login(username, password)
+    else:
+        client.login(username, password)
+        client.dump_settings("session.json")
+
+    extra_data = {}
+    usertags = []
+    if author:
+        user = client.search_following(str(client.user_id), author)[0]
+        usertags.append(Usertag(user=user, x=0.5, y=0.5))
+        extra_data["invite_coauthor_user_id"] = user.pk
+
+
+    if len(locations) == 1:
+        client.photo_upload(locations[0], description, extra_data=extra_data)
+    else:
+        client.album_upload([Path(location) for location in locations], description,
+                            usertags=usertags, extra_data=extra_data)
 
 def upload_story(location: str):
     username = os.getenv("INSTAGRAM_USERNAME")
     password = os.getenv("INSTAGRAM_PASSWORD")
     client = Client()
-    client.login(username, password)
+    if os.path.exists("session.json"):
+        client.load_settings("session.json")
+        client.login(username, password)
+    else:
+        client.login(username, password)
+        client.dump_settings("session.json")
     client.photo_upload_to_story(Path(location))
 
 if __name__ == "__main__":
@@ -63,4 +86,3 @@ if __name__ == "__main__":
 
     load_dotenv()
     pprint.pprint(get_meals("20250821"))
-    # pprint.pprint(get_times("20251013"))

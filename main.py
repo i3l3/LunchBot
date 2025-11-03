@@ -25,33 +25,37 @@ def upload(date: datetime.date, code: list, offset: int, bg: str, ratio=4/5, is_
     if is_test:
         post_bg = crop_img(Image.open(bg), ratio).filter(ImageFilter.GaussianBlur(3))
         post_bg = write_text(post_bg, offset, ratio, "테스트 게시물", "테스트 게시물입니다.", bottom)
-        post_bg.save("assets/post.png")
+        post_bg.save("assets/post.jpg")
 
         if is_post:
-            upload_post(["assets/post.png"], "테스트 게시물입니다.")
+            upload_post(["assets/post.jpg"], "테스트 게시물입니다.")
         elif not is_post:
-            upload_story("assets/post.png")
-        os.remove("assets/post.png")
+            upload_story("assets/post.jpg")
+        os.remove("assets/post.jpg")
         return
 
     meals = get_meals(date.strftime("%Y%m%d"))
     results = []
+    title = date.strftime(f"%m월 %d일 %A 급식 정보")
+    main = '\n\n'
     for i, meal in enumerate(meals):
         meal_code = int(meal["MMEAL_SC_CODE"])
         if meal_code in code:
-            title = date.strftime(f"%m월 %d일 %A {meal_name[meal_code - 1]} 정보")
-            main = meals[0]["DDISH_NM"].replace("<br/>", "\n")
+            menu = meals[i]["DDISH_NM"].replace("<br/>", "\n")
+            main += f'{meal_name[meal_code - 1]}\n{menu}\n\n'
 
             post_bg = crop_img(Image.open(bg), ratio).filter(ImageFilter.GaussianBlur(3))
-            post_bg = write_text(post_bg, offset, ratio, title, main, bottom)
-            post_bg.save(f"assets/post{i}.png")
-            results.append(f"assets/post{i}.png")
+            post_bg = write_text(post_bg, offset, ratio, title, menu, bottom)
+            post_bg.save(f"assets/post{i}.jpg")
+            results.append(f"assets/post{i}.jpg")
 
     # webhook logging?
     if is_post:
-        upload_post(results, f"{title}\n\n{main}\n\n{bottom}")
+        upload_post(results, f"{title}{main}{bottom}")
     elif not is_post:
-        upload_story(results[0])
+        for result in results:
+            upload_story(result)
+
     for result in results:
         os.remove(result)
 
@@ -68,13 +72,18 @@ if __name__ == "__main__":
     def dinner_story(): upload(today, [3], 50, bg, ratio=9/16, is_post=False)
     def meal_post(): upload(tomorrow, [2, 3], 50, bg)
 
-    jobstores = {
-        'default': SQLAlchemyJobStore(url='sqlite:///storage.sqlite')
-    }
 
-    scheduler = BackgroundScheduler(jobstores=jobstores)
-    scheduler.add_job(lunch_story, "cron", hour=7)
-    scheduler.add_job(dinner_story, "cron", hour=16, minute=30)
-    scheduler.add_job(meal_post, "cron", hour=21)
-    scheduler.start()
+    # upload_post(['assets/post.jpg'], 'asdf')
+    # upload(today, [2], 50, bg, ratio=4/5, is_post=True, is_test=True)
+    # upload(today, [3], 50, bg, ratio=9/16, is_post=False, is_test=True)
+    meal_post()
+    # jobstores = {
+    #     'default': SQLAlchemyJobStore(url='sqlite:///storage.sqlite')
+    # }
+    #
+    # scheduler = BackgroundScheduler(jobstores=jobstores) # 왜 안되지??
+    # scheduler.add_job(lunch_story, "cron", hour=7)
+    # scheduler.add_job(dinner_story, "cron", hour=16, minute=30)
+    # scheduler.add_job(meal_post, "cron", hour=21)
+    # scheduler.start()
 
