@@ -1,13 +1,17 @@
 from dotenv import load_dotenv
 from PIL import Image, ImageFilter
 from locale import setlocale
-from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
+from apscheduler.events import EVENT_JOB_EXECUTED, EVENT_JOB_ERROR
+from apscheduler.schedulers.blocking import BlockingScheduler
 from api_wrapper import get_meals, upload_post, upload_story
 from image_maker import crop_img, write_text
 import locale
 import datetime
 import os
+import logging
+import sys
+import signal
+
 
 setlocale(locale.LC_TIME, "ko_KR")
 load_dotenv()
@@ -59,7 +63,18 @@ def upload(date: datetime.date, code: list, offset: int, bg: str, ratio=4/5, is_
     for result in results:
         os.remove(result)
 
+
 if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler('scheduler.log', encoding='utf-8'),
+            logging.StreamHandler(sys.stdout)
+        ]
+    )
+    logger = logging.getLogger(__name__)
+
     '''
     금일 07:00 중식 스토리
     금일 16:30 석식 스토리
@@ -68,22 +83,80 @@ if __name__ == "__main__":
     bg = "assets/boram1.png"
     today = datetime.date.today()
     tomorrow = datetime.date.today() + datetime.timedelta(days=1)
-    def lunch_story(): upload(today, [2], 50, bg, ratio=9/16, is_post=False)
-    def dinner_story(): upload(today, [3], 50, bg, ratio=9/16, is_post=False)
-    def meal_post(): upload(tomorrow, [2, 3], 50, bg)
 
 
-    # upload_post(['assets/post.jpg'], 'asdf')
-    # upload(today, [2], 50, bg, ratio=4/5, is_post=True, is_test=True)
-    # upload(today, [3], 50, bg, ratio=9/16, is_post=False, is_test=True)
-    # meal_post()
-    jobstores = {
-        'default': SQLAlchemyJobStore(url='sqlite:///storage.sqlite')
-    }
+    def lunch_story():
+        try:
+            logger.info("Starting lunch story upload")
+            upload(today, [2], 50, bg, ratio=9 / 16, is_post=False)
+            logger.info("Lunch story upload completed successfully")
+        except Exception as e:
+            logger.error(f"Error occurred during lunch story upload: {str(e)}", exc_info=True)
+            raise
 
-    scheduler = BackgroundScheduler(jobstores=jobstores)
-    scheduler.add_job(lunch_story, "cron", hour=7)
-    scheduler.add_job(dinner_story, "cron", hour=16, minute=30)
-    scheduler.add_job(meal_post, "cron", hour=21)
-    scheduler.start()
 
+    def dinner_story():
+        try:
+            logger.info("Starting dinner story upload")
+            upload(today, [3], 50, bg, ratio=9 / 16, is_post=False)
+            logger.info("Dinner story upload completed successfully")
+        except Exception as e:
+            logger.error(f"Error occurred during dinner story upload: {str(e)}", exc_info=True)
+            raise
+
+
+    def meal_post():
+        try:
+            logger.info("Starting meal post upload")
+            upload(tomorrow, [2, 3], 50, bg)
+            logger.info("Meal post upload completed successfully")
+        except Exception as e:
+            logger.error(f"Error occurred during meal post upload: {str(e)}", exc_info=True)
+            raise
+
+    def test_post():
+        try:
+            logger.info("Starting test post upload")
+            upload(today, [2], 50, bg, ratio=4 / 5, is_test=True)
+            logger.info("Test post upload completed successfully")
+        except Exception as e:
+            logger.error(f"Error occurred during test post upload: {str(e)}", exc_info=True)
+            raise
+
+
+    def job_listener(event):
+        if event.exception:
+            logger.error(f"Job execution failed: {event.job_id}, Exception: {event.exception}")
+        else:
+            logger.info(f"Job execution succeeded: {event.job_id}")
+
+
+    scheduler = BlockingScheduler()
+
+    def signal_handler(signum, frame):
+        logger.info(f"Received signal {signum}, shutting down scheduler...")
+        scheduler.shutdown(wait=False)
+        sys.exit(0)
+
+
+    # 왜 안되지??
+    signal.signal(signal.SIGINT, signal_handler)  # Ctrl+C
+    signal.signal(signal.SIGTERM, signal_handler)  # kill command
+
+    scheduler.add_listener(job_listener, EVENT_JOB_EXECUTED | EVENT_JOB_ERROR)
+
+    scheduler.add_job(lunch_story, "cron", hour=7, id='lunch_story')
+    scheduler.add_job(dinner_story, "cron", hour=16, minute=30, id='dinner_story')
+    scheduler.add_job(meal_post, "cron", hour=21, id='meal_post')
+
+    logger.info("Scheduler started")
+    logger.info("Registered jobs:")
+    logger.info("  - Today Lunch story: Daily at 07:00")
+    logger.info("  - Today Dinner story: Daily at 16:30")
+    logger.info("  - Tomorrow Meal post: Daily at 21:00")
+    logger.info("Press Ctrl+C to exit")
+
+    try:
+        scheduler.start()
+    except (KeyboardInterrupt, SystemExit):
+        logger.info("Scheduler stopped")
