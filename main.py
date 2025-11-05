@@ -13,7 +13,7 @@ import sys
 import signal
 
 
-setlocale(locale.LC_TIME, "ko_KR")
+setlocale(locale.LC_TIME, "ko_KR.UTF-8")
 load_dotenv()
 meal_name = ["조식", "중식", "석식"]
 
@@ -40,11 +40,11 @@ def upload(date: datetime.date, code: list, offset: int, bg: str, ratio=4/5, is_
 
     meals = get_meals(date.strftime("%Y%m%d"))
     results = []
-    title = date.strftime(f"%m월 %d일 %A 급식 정보")
     main = '\n\n'
     for i, meal in enumerate(meals):
         meal_code = int(meal["MMEAL_SC_CODE"])
         if meal_code in code:
+            title = date.strftime(f"%m월 %d일 %A {meal_name[meal_code - 1]} 정보")
             menu = meals[i]["DDISH_NM"].replace("<br/>", "\n")
             main += f'{meal_name[meal_code - 1]}\n{menu}\n\n'
 
