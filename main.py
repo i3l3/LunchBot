@@ -40,13 +40,16 @@ def upload(date: datetime.date, code: list, offset: int, bg: str, ratio=4/5, is_
 
     meals = get_meals(date.strftime("%Y%m%d"))
     results = []
-    main = '\n\n'
+    # main = '\n\n'
+    description = date.strftime("%m월 %d일 %A 급식 정보") + "\n\n"
+
     for i, meal in enumerate(meals):
         meal_code = int(meal["MMEAL_SC_CODE"])
         if meal_code in code:
             title = date.strftime(f"%m월 %d일 %A {meal_name[meal_code - 1]} 정보")
             menu = meals[i]["DDISH_NM"].replace("<br/>", "\n")
-            main += f'{meal_name[meal_code - 1]}\n{menu}\n\n'
+            # main += f'{meal_name[meal_code - 1]}\n{menu}\n\n'
+            description += f'{meal_name[meal_code - 1]}\n{menu}\n\n'
 
             post_bg = crop_img(Image.open(bg), ratio).filter(ImageFilter.GaussianBlur(3))
             post_bg = write_text(post_bg, offset, ratio, title, menu, bottom)
@@ -55,7 +58,7 @@ def upload(date: datetime.date, code: list, offset: int, bg: str, ratio=4/5, is_
 
     # webhook logging?
     if is_post:
-        upload_post(results, f"{title}{main}{bottom}")
+        upload_post(results, description + bottom)
     elif not is_post:
         for result in results:
             upload_story(result)
@@ -133,7 +136,7 @@ if __name__ == "__main__":
 
     scheduler = BlockingScheduler()
 
-    def signal_handler(signum, frame):
+    def signal_handler(signum, _):
         logger.info(f"Received signal {signum}, shutting down scheduler...")
         scheduler.shutdown(wait=False)
         sys.exit(0)

@@ -1,4 +1,5 @@
 import json
+import logging
 import urllib
 import requests
 import os
@@ -42,6 +43,8 @@ def get_times(date: str):
     return json.loads(response.text)["hisTimetable"][1]["row"]
 
 def upload_post(locations: list, description: str):
+    logger = logging.getLogger(__name__)
+
     username = os.getenv("INSTAGRAM_USERNAME")
     password = os.getenv("INSTAGRAM_PASSWORD")
     author = os.getenv("INSTAGRAM_AUTHOR")
@@ -57,9 +60,13 @@ def upload_post(locations: list, description: str):
     extra_data = {}
     usertags = []
     if author:
-        user = client.search_following(str(client.user_id), author)[0]
-        usertags.append(Usertag(user=user, x=0.5, y=0.5))
-        extra_data["invite_coauthor_user_id"] = user.pk
+        users = client.search_following(str(client.user_id), author)
+        if len(users) > 0:
+            usertags.append(Usertag(user=users[0], x=0.5, y=0.5))
+            extra_data["invite_coauthor_user_id"] = users[0].pk
+        else:
+            logger.info(f"User @{author} not found")
+
 
 
     if len(locations) == 1:
