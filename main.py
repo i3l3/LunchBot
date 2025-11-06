@@ -38,6 +38,8 @@ def upload(date: datetime.date, code: list, offset: int, bg: str, ratio=4/5, is_
         os.remove("assets/post.jpg")
         return
 
+    logger = logging.getLogger(__name__)
+    logger.info("Date: " + date.strftime("%Y%m%d"))
     meals = get_meals(date.strftime("%Y%m%d"))
     results = []
     # main = '\n\n'
@@ -88,7 +90,13 @@ if __name__ == "__main__":
     tomorrow = datetime.date.today() + datetime.timedelta(days=1)
 
 
+    def get_date():
+        logger.info("Today: " + today.strftime("%m월 %d일 %A"))
+        logger.info("Tomorrow: " + tomorrow.strftime("%m월 %d일 %A"))
+
+
     def lunch_story():
+        get_date()
         try:
             logger.info("Starting lunch story upload")
             upload(today, [2], 50, bg, ratio=9 / 16, is_post=False)
@@ -99,6 +107,7 @@ if __name__ == "__main__":
 
 
     def dinner_story():
+        get_date()
         try:
             logger.info("Starting dinner story upload")
             upload(today, [3], 50, bg, ratio=9 / 16, is_post=False)
@@ -109,6 +118,7 @@ if __name__ == "__main__":
 
 
     def meal_post():
+        get_date()
         try:
             logger.info("Starting meal post upload")
             upload(tomorrow, [2, 3], 50, bg)
@@ -118,6 +128,7 @@ if __name__ == "__main__":
             raise
 
     def test_post():
+        get_date()
         try:
             logger.info("Starting test post upload")
             upload(today, [2], 50, bg, ratio=4 / 5, is_test=True)
@@ -142,7 +153,6 @@ if __name__ == "__main__":
         sys.exit(0)
 
 
-    # 왜 안되지??
     signal.signal(signal.SIGINT, signal_handler)  # Ctrl+C
     signal.signal(signal.SIGTERM, signal_handler)  # kill command
 
@@ -158,6 +168,8 @@ if __name__ == "__main__":
     logger.info("  - Today Dinner story: Daily at 16:30")
     logger.info("  - Tomorrow Meal post: Daily at 21:00")
     logger.info("Press Ctrl+C to exit")
+
+    get_date()
 
     try:
         scheduler.start()
