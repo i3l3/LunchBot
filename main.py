@@ -5,6 +5,7 @@ from apscheduler.events import EVENT_JOB_EXECUTED, EVENT_JOB_ERROR
 from apscheduler.schedulers.blocking import BlockingScheduler
 from api_wrapper import get_meals, upload_post, upload_story
 from image_maker import crop_img, write_text
+import pytz
 import locale
 import datetime
 import os
@@ -86,7 +87,8 @@ if __name__ == "__main__":
     명일 21:00 중식, 석식 포스트
     '''
     bg = "assets/boram1.png"
-    today = datetime.date.today()
+    tz = pytz.timezone("Asia/Seoul")
+    today = datetime.datetime.now(tz).date()
     tomorrow = datetime.date.today() + datetime.timedelta(days=1)
 
 
