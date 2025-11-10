@@ -23,24 +23,7 @@ def get_meals(date: str):
     }
     url = base_url + "?" + urllib.parse.urlencode(args)
     response = requests.get(url)
-    return json.loads(response.text)["mealServiceDietInfo"][1]["row"]
-
-def get_times(date: str):
-    api_key = os.getenv("API_KEY")
-    ofcdc = os.getenv("OFCDC_CODE")
-    school = os.getenv("SCHOOL_CODE")
-
-    base_url = "https://open.neis.go.kr/hub/hisTimetable"
-    args = {
-        "KEY": api_key,
-        "Type": "json",
-        "ATPT_OFCDC_SC_CODE": ofcdc,
-        "SD_SCHUL_CODE": school,
-        "ALL_TI_YMD": date,
-    }
-    url = base_url + "?" + urllib.parse.urlencode(args)
-    response = requests.get(url)
-    return json.loads(response.text)["hisTimetable"][1]["row"]
+    return json.loads(response.text)["mealServiceDietInfo"][1]["row"] # TODO 급식 메뉴 없을때
 
 def upload_post(locations: list, description: str):
     logger = logging.getLogger(__name__)
