@@ -85,22 +85,23 @@ if __name__ == "__main__":
     명일 21:00 중식, 석식 포스트
     '''
     bg = "assets/boram1.png"
-    tz = pytz.timezone("Asia/Seoul")
-    now = datetime.datetime.now(tz)
-    today = now.date()
-    tomorrow = (now + datetime.timedelta(days=1)).date()
 
 
     def get_date():
+        tz = pytz.timezone("Asia/Seoul")
+        now = datetime.datetime.now(tz)
+        today = now.date()
+        tomorrow = (now + datetime.timedelta(days=1)).date()
         logger.info("Today: " + today.strftime("%m월 %d일 %A"))
         logger.info("Tomorrow: " + tomorrow.strftime("%m월 %d일 %A"))
+        return today, tomorrow
 
 
     def lunch_story():
         get_date()
         try:
             logger.info("Starting lunch story upload")
-            upload(today, [2], 50, bg, ratio=9 / 16, is_post=False)
+            upload(get_date()[0], [2], 50, bg, ratio=9 / 16, is_post=False)
             logger.info("Lunch story upload completed successfully")
         except Exception as e:
             logger.error(f"Error occurred during lunch story upload: {str(e)}", exc_info=True)
@@ -111,7 +112,7 @@ if __name__ == "__main__":
         get_date()
         try:
             logger.info("Starting dinner story upload")
-            upload(today, [3], 50, bg, ratio=9 / 16, is_post=False)
+            upload(get_date()[0], [3], 50, bg, ratio=9 / 16, is_post=False)
             logger.info("Dinner story upload completed successfully")
         except Exception as e:
             logger.error(f"Error occurred during dinner story upload: {str(e)}", exc_info=True)
@@ -122,7 +123,7 @@ if __name__ == "__main__":
         get_date()
         try:
             logger.info("Starting meal post upload")
-            upload(tomorrow, [2, 3], 50, bg)
+            upload(get_date()[1], [2, 3], 50, bg)
             logger.info("Meal post upload completed successfully")
         except Exception as e:
             logger.error(f"Error occurred during meal post upload: {str(e)}", exc_info=True)
@@ -132,7 +133,7 @@ if __name__ == "__main__":
         get_date()
         try:
             logger.info("Starting test post upload")
-            upload(today, [2], 50, bg, ratio=4 / 5, is_test=True)
+            upload(get_date()[0], [2], 50, bg, ratio=4 / 5, is_test=True)
             logger.info("Test post upload completed successfully")
         except Exception as e:
             logger.error(f"Error occurred during test post upload: {str(e)}", exc_info=True)
