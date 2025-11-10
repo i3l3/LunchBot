@@ -88,8 +88,9 @@ if __name__ == "__main__":
     '''
     bg = "assets/boram1.png"
     tz = pytz.timezone("Asia/Seoul")
-    today = datetime.datetime.now(tz).date()
-    tomorrow = datetime.date.today() + datetime.timedelta(days=1)
+    now = datetime.datetime.now(tz)
+    today = now.date()
+    tomorrow = (now + datetime.timedelta(days=1)).date()
 
 
     def get_date():
