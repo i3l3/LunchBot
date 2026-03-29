@@ -43,12 +43,13 @@ def upload_post(locations: list, description: str):
     extra_data = {}
     usertags = []
     if author:
-        users = client.search_following(str(client.user_id), author)
-        if len(users) > 0:
-            usertags.append(Usertag(user=users[0], x=0.5, y=0.5))
-            extra_data["invite_coauthor_user_id"] = users[0].pk
-        else:
-            logger.info(f"User @{author} not found")
+        try:
+            user = client.user_info_by_username(author)
+            if user:
+                usertags.append(Usertag(user=user, x=0.5, y=0.5))
+                extra_data["invite_coauthor_user_id"] = user.pk
+        except Exception as e:
+            logger.info(f"User @{author} not found: {e}")
 
 
 
