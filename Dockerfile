@@ -14,7 +14,7 @@ RUN apt-get update \
 ENV LANG=ko_KR.UTF-8 \
     LC_ALL=ko_KR.UTF-8
 
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+COPY --from=ghcr.io/astral-sh/uv:0.11.7 /uv /usr/local/bin/uv
 
 ENV UV_SYSTEM_PYTHON=1
 
