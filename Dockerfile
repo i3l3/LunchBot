@@ -14,16 +14,12 @@ RUN apt-get update \
 ENV LANG=ko_KR.UTF-8 \
     LC_ALL=ko_KR.UTF-8
 
-COPY pyproject.toml /app/
-RUN python - <<'PY'
-import subprocess
-import tomllib
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
-with open("pyproject.toml", "rb") as f:
-    deps = tomllib.load(f)["project"]["dependencies"]
+ENV UV_SYSTEM_PYTHON=1
 
-subprocess.check_call(["pip", "install", "--no-cache-dir", *deps])
-PY
+COPY pyproject.toml uv.lock /app/
+RUN uv sync --frozen --no-install-project
 
 COPY . /app
 
