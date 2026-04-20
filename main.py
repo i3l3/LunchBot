@@ -147,7 +147,7 @@ if __name__ == "__main__":
             logger.info(f"Job execution succeeded: {event.job_id}")
 
 
-    scheduler = BlockingScheduler()
+    scheduler = BlockingScheduler(timezone=pytz.timezone('Asia/Seoul'))
 
     def signal_handler(signum, _):
         logger.info(f"Received signal {signum}, shutting down scheduler...")
