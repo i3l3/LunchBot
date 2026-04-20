@@ -15,7 +15,15 @@ ENV LANG=ko_KR.UTF-8 \
     LC_ALL=ko_KR.UTF-8
 
 COPY pyproject.toml /app/
-RUN python -c "import tomllib,subprocess; deps=tomllib.load(open('pyproject.toml','rb'))['project']['dependencies']; subprocess.check_call(['pip','install','--no-cache-dir',*deps])"
+RUN python - <<'PY'
+import subprocess
+import tomllib
+
+with open("pyproject.toml", "rb") as f:
+    deps = tomllib.load(f)["project"]["dependencies"]
+
+subprocess.check_call(["pip", "install", "--no-cache-dir", *deps])
+PY
 
 COPY . /app
 
